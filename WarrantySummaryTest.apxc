@@ -1,0 +1,11 @@
+@isTest
+public class WarrantySummaryTest {
+    @isTest static void createCase(){
+        Case testCase = new Case();
+        testCase.Origin = 'Web';
+        testCase.Product_Purchase_Date__c = Date.newInstance(2021, 03, 15);
+        testCase.Product_Total_Warranty_Days__c = 25;
+        testCase.Product_Has_Extended_Warranty__c = True;
+        insert testCase;
+    }
+}
