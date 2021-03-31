@@ -1,0 +1,10 @@
+@isTest
+public class homework4_test {
+    @isTest static void createAccount(){
+        Account acc = new Account();
+        acc.Name = 'Test account wiht 99+ employees';
+        acc.NumberOfEmployees = 100;
+        insert acc;
+    }
+}
+
