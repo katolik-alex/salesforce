@@ -1,0 +1,17 @@
+trigger homework4 on Account (after insert) {
+    for (Account acc : Trigger.new){
+        if (acc.NumberOfEmployees > 99){
+            List<Opportunity> oppList = new List<Opportunity>();
+            for (Integer i = 1; i <= 10; i++){
+                Opportunity opp = new Opportunity();
+           		opp.AccountId = acc.Id;
+            	opp.Name = acc.Name;
+                opp.StageName = 'Prospecting';
+                opp.CloseDate = Date.today();
+                
+                oppList.add(opp);
+            }
+            insert oppList;
+        }
+    }
+}
