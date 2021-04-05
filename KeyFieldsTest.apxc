@@ -1,0 +1,24 @@
+@isTest
+public class KeyFieldsTest {
+    @isTest static void createLead(){
+        Lead lid = new Lead();
+        lid.LastName  = 'Name name';
+        lid.FirstName = 'First';
+        lid.Email 	  = 'test@gmail.com';
+        lid.Company   = 'Company';
+        insert lid;
+    }
+    @isTest static void createLeadWithTest(){
+        Lead lid = new Lead();
+        lid.LastName = 'test';
+        lid.Company  = 'Company';
+        insert lid;
+    }
+    @isTest static void createLeadWithBypass(){
+        Lead lid = new Lead();
+        lid.LastName = 'test';
+        lid.Company  = 'Company';
+        lid.Bypass_Triggers__c = true;
+        insert lid;
+    }
+}
