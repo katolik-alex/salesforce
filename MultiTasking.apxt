@@ -1,0 +1,17 @@
+trigger MultiTasking on Account (after insert) {
+    List<Task> taskToCreate = new List<Task>();
+    List<String> choosenOptions = new List<String>();
+    for (Account acc : Trigger.new){
+        if (acc.Counter__c != 0){
+            choosenOptions = acc.clients__c.split(';');
+            for (Integer i = 0; i < acc.Counter__c; i++){
+                Task tsk      = new Task();
+               	tsk.OwnerId   = '0055Y00000DX2JPQA1';  
+                tsk.WhatId = acc.Id;
+                tsk.Subject   = choosenOptions.get(i);             
+                taskToCreate.add(tsk);
+            }
+            insert taskToCreate;
+        }
+    }
+}
