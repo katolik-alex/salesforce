@@ -1,0 +1,13 @@
+trigger MultiSelectPicklistFun on Account (before insert, before update) {
+    List<String> choosenOptions = new List<String>();
+    for (Account acc : Trigger.new){
+        if (acc.clients__c != null){
+            choosenOptions = acc.clients__c.split(';');
+            acc.Counter__c = choosenOptions.size();;
+        } 
+        else {
+            acc.Counter__c = 0;
+        }
+    }
+}
+
