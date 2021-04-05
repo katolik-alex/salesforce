@@ -1,0 +1,41 @@
+trigger KeyFields on Lead (before insert) {
+    for(Lead lid : Trigger.new){
+        if(lid.Bypass_Triggers__c != true){          
+            String badWord = 'test';
+            List<String> testFields = new List<String>();
+            if(lid.FirstName != null && lid.FirstName.equalsIgnoreCase(badWord)){ testFields.add('Fist Name');}
+            if(lid.LastName != null && lid.LastName.equalsIgnoreCase(badWord)) { testFields.add('Last Name');}
+            if(lid.Email != null && lid.Email.equalsIgnoreCase(badWord))    { testFields.add('Email');}
+            if(lid.Phone != null && lid.Phone.equalsIgnoreCase(badWord))    { testFields.add('Phone');}
+            if(lid.Website != null && lid.Website.equalsIgnoreCase(badWord))  { testFields.add('Website');}
+            if(lid.Title != null && lid.Title.equalsIgnoreCase(badWord))    { testFields.add('Title');}
+            if(testFields.size() > 0){
+                Task tsk      = new Task();
+                tsk.OwnerId   = '0055Y00000DX2JPQA1';  
+                tsk.Subject   = 'WARNING'; 
+                tsk.Description = 'This Lead contains the TEST keyword in the following key fields:' + testFields.toString();
+                insert tsk;
+                break;
+            }
+            Integer counter = 0;
+            List<String> populatedFields = new List<String>();
+            if(lid.FirstName != null){ counter++; populatedFields.add('Fist Name');}
+            if(lid.LastName != null) { counter++; populatedFields.add('Last Name');}
+            if(lid.Email != null)    { counter++; populatedFields.add('Email');}
+            if(lid.Phone != null)    { counter++; populatedFields.add('Phone');}
+            if(lid.Website != null)  { counter++; populatedFields.add('Website');}
+            if(lid.Title != null)    { counter++; populatedFields.add('Title');}
+            lid.Key_Fields_Populated__c = counter;
+            if (lid.Key_Fields_Populated__c >= 3){
+                List<Task> taskToCreate = new List<Task>();
+                for (String field : populatedFields){
+                    Task tsk      = new Task();
+                    tsk.OwnerId   = '0055Y00000DX2JPQA1';  
+                    tsk.Subject   = 'Verify the '+ field + ' field';             
+                    taskToCreate.add(tsk);
+                }
+                insert taskToCreate;
+            }
+        }
+     }
+}
