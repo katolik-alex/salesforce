@@ -1,0 +1,46 @@
+trigger DedupeLead on Lead (before insert) {
+    List<Group> dataQualityGroups = [SELECT Id
+                                       FROM Group
+                                      WHERE DeveloperName = 'Data_Quality'
+                                      LIMIT 1];
+    for (Lead myLead : Trigger.new){
+        if (myLead.Email != null) {
+            String firstNameMatch;
+            if (myLead.FirstName != null){
+                firstNameMatch = myLead.FirstName.subString(0, 1) + '%';
+            }
+            String companyMatch = '%' + myLead.Company + '%';
+            List<Contact> matchingContacts = [SELECT Id,
+                                             		 FirstName,
+                                             		  LastName,
+                                             	  Account.Name
+                                                FROM Contact
+                                               WHERE (Email != null
+                                                 AND Email = :myLead.Email)
+                                                 OR (FirstName != null
+                                                 AND FirstName     LIKE :firstNameMatch
+                                             	 AND LastName        = :myLead.LastName
+                                                 AND Account.Name LIKE :companyMatch)];
+            System.debug(matchingContacts.size() + 'contact(s) found.');
+            
+            if (!matchingContacts.isEmpty()){
+                if (!dataQualityGroups.isEmpty()){
+                    myLead.OwnerId = dataQualityGroups.get(0).Id;
+                }
+                
+                String dupeContactsMessage = 'Duplicate Contact(s) found:\n';
+                for (Contact matchingContact : matchingContacts) {
+                    dupeContactsMessage += matchingContact.FirstName + ' '
+                        				 + matchingContact.LastName  + ' '
+                        				 + matchingContact.Account.Name + ' ('
+                        				 + matchingContact.Id + ')\n';
+                }
+                if (myLead.Description != null){
+                    dupeContactsMessage += '\n' + myLead.Description;
+                }
+                myLead.Description = dupeContactsMessage;
+            }
+        }
+    }
+
+}
