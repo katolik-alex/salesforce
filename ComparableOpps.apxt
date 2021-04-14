@@ -1,0 +1,33 @@
+trigger ComparableOpps on Opportunity (after insert) {
+    for (Opportunity opp : Trigger.new){
+        Opportunity oppWithAccountInfo = [SELECT Id,
+                                          		 Account.Industry
+                                            FROM Opportunity
+                                           WHERE Id = :opp.Id
+                                           LIMIT 1];
+        
+        
+        Decimal minAmount = opp.Amount * 0.9;
+        Decimal maxAmount = opp.Amount * 1.1;
+        
+        List<Opportunity> comparableOpps = [SELECT Id
+                                           	  FROM Opportunity
+                                           	 WHERE Amount >= :minAmount
+                                           	   AND Amount <= :maxAMount
+                                           	   AND Account.Industry = :oppWithAccountInfo.Account.Industry
+                                           	   AND StageName = 'Closed Won'
+                                           	   AND CloseDate >= LAST_N_DAYS:365
+                                           	   AND Id != :opp.Id
+                                           	   AND Owner.Position_Start_Date__c < LAST_N_DAYS:365 ];
+        System.debug('Comparable opp(s) found: ' + comparableOpps);
+        
+        List<Comparable__c> junctionObjToInsert   = new List<Comparable__c>();
+        for (Opportunity comp : comparableOpps){
+            Comparable__c junctionObj 			  = new Comparable__c();
+            junctionObj.Base_Opportunity__c 	  = opp.Id;
+            junctionObj.Comparable_Opportunity__c = comp.Id;
+            junctionObjToInsert.add(junctionObj);
+        }
+        insert junctionObjToInsert;
+    }
+}
