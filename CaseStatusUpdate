@@ -1,0 +1,18 @@
+trigger CaseStatusUpdate on Case (before insert) {
+    for (Case cc: Trigger.new){
+    //pull cases with the same contact and the same day
+		List<Case> sameContactCases = new List<Case>();
+        sameContactCases = [SELECT Id FROM Case 
+                            WHERE ContactId = :cc.ContactId
+                            AND CreatedDate = TODAY];
+        List<Case> sameAccountCases = new List<Case>();
+        sameAccountCases = [SELECT Id FROM Case 
+                            WHERE AccountId = :cc.AccountId
+                            AND CreatedDate = TODAY]
+	// if size > 2 
+        if (sameContactCases.size()>2 || sameAccountCases.size()>3 ){
+            cc.Status = 'Closed';
+        }
+	// update case status to "Closed"
+	
+    }
