@@ -1,0 +1,24 @@
+trigger OppAccCont on Opportunity (before insert) {
+    for (Opportunity opp : Trigger.new){
+        if (opp.AccountId != null){
+            List<Contact> accConts = [SELECT Id, Description 
+                                      FROM Contact
+                                      WHERE AccountId = :opp.AccountId];
+            
+            User oppCreator = [SELECT Name
+                               FROM User
+                               WHERE Id = :opp.OwnerId];
+            
+            String opportunityInfo = 'New opportunity created by'
+                					+ oppCreator.Name + ' with close date '
+                					+ String.valueOf(opp.CloseDate) + '.';
+            
+            if (!accConts.isEmpty()){
+                for (Contact cont : accConts){
+                cont.Description = opportunityInfo;
+            	}
+                update accConts;
+            }          
+        }
+    }
+}
