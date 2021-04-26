@@ -1,0 +1,18 @@
+trigger ContactDomain on Contact (before insert) {
+    for (Contact con : Trigger.new){
+        if (con.Email != null){
+            List<String> eDomain = con.Email.split('@');
+            String domain = '%' + eDomain.get(1) + '%';
+            
+            //find accounts with the same domain website
+            Account acc = [SELECT Id 
+                           FROM Account 
+                           WHERE Website 
+                           LIKE :domain
+                           LIMIT 1];
+            if (acc != null){
+                con.AccountId = acc.Id;
+            }
+        }
+    }
+}
