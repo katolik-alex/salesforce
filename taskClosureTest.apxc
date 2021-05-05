@@ -1,0 +1,23 @@
+@isTest
+public class taskClosureTest {
+    @isTest static void CloseTasks(){
+    	Lead lid = new Lead();
+       	lid.LastName = 'Test Last Name';
+        lid.Company  = 'Test company';
+        insert lid;
+        
+        Task tsk   = new Task();
+        tsk.WhoId  = lid.Id;
+        tsk.Status = 'Not Started';
+        insert tsk;
+        
+        lid.Status = 'Closed - Converted';
+        update lid;
+        
+        
+        Task tskUpdated   = new Task();
+        tskUpdated        = [SELECT Status FROM Task WHERE Id = :tsk.Id];
+        System.assertEquals('Completed', tskUpdated.Status);
+        
+    }
+}
