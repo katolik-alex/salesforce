@@ -1,0 +1,19 @@
+trigger taskClosureTrigger on Lead (after update) {
+    Set<Id> lidIdList = new Set<Id>();
+    
+    for (Lead lid : Trigger.New){
+        if (lid.Status == 'Closed - Converted' || lid.Status == 'Closed - Not Converted'){
+            lidIdList.add(lid.Id);
+        }
+    }
+    
+    List<Task> taskList = new List<Task>();
+    taskList 			= [SELECT Id FROM Task WHERE WhoId IN :lidIdList];
+    
+    if (taskList.size() > 0){
+        for (Task tsk : taskList){
+            tsk.Status = 'Completed';   
+        }
+        update taskList;
+    }
+}
