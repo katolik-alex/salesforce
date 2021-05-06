@@ -1,0 +1,14 @@
+@isTest
+private class TestVerifyDate {
+    @isTest static void testCheckRightDates() {
+        Date testDate = VerifyDate.CheckDates(Date.today(), Date.today().addDays(10));
+        System.assertEquals(Date.today().addDays(10), testDate);
+    }
+    @isTest static void testCheckWrongDates() {
+        Date testDate = VerifyDate.CheckDates(Date.today(), Date.today().addDays(40));
+        Integer totalDays = Date.daysInMonth(Date.today().year(), Date.today().month());
+        Date lastDay = Date.newInstance(Date.today().year(), Date.today().month(), totalDays);
+        System.assertEquals(lastDay, testDate);
+    }
+}
+
